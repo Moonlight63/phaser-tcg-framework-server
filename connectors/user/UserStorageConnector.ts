@@ -1,3 +1,5 @@
+import { User } from "./User";
+
 export abstract class UserStorageConnector {
   abstract getUser(userId: string): Promise<any>;
   abstract setUser(user: any): Promise<void>;

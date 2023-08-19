@@ -2,6 +2,7 @@ import fs from 'fs';
 import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
 import { UserStorageConnector } from './UserStorageConnector';
+import { User } from './User';
 
 export class LocalUserStorage extends UserStorageConnector {
   private filePath: string;
