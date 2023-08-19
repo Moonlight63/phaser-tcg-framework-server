@@ -2,6 +2,8 @@ import express from 'express';
 import { parseConfig } from './configParser';
 import { ServerState } from './ServerState';
 
+let serverState: ServerState;
+
 function getConfigFilePath(): string {
     const configPath = process.env["CQ_CONFIG_PATH"];
     return configPath === undefined ? "config.json" : configPath;
@@ -12,7 +14,7 @@ const main = async () => {
     const config = parseConfig(getConfigFilePath()); // Make sure to update the path
 
     // Initialize the server state
-    const serverState = new ServerState(config);
+    serverState = new ServerState(config);
 
     // Create an Express application
     const app = express();
