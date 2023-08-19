@@ -6,7 +6,7 @@ import { InMemorySessionStorage } from './connectors/session/InMemorySessionStor
 import { LobbyStorageConnector } from './connectors/lobby/LobbyStorageConnector';
 import { InMemoryLobbyStorage } from './connectors/lobby/InMemoryLobbyStorage';
 
-export class ServerState {
+class ServerState {
   userStorage: UserStorageConnector;
   sessionStorage: SessionStorageConnector;
   lobbyStorage: LobbyStorageConnector;
@@ -39,3 +39,5 @@ export class ServerState {
     }
   }
 }
+const serverState = new ServerState(config);
+export default serverState;

@@ -11,23 +11,6 @@ export class LocalUserStorage extends UserStorageConnector {
     super();
     this.filePath = config.filePath;
 
-    passport.serializeUser((user: any, done) => {
-      done(null, user.id);
-    });
-
-    passport.deserializeUser(async (id: string, done) => {
-      const user = await this.getUser(id);
-      done(null, user);
-    });
-
-    passport.use(new LocalStrategy(async (username, password, done) => {
-      const user = await this.authenticate(username, password);
-      if (user) {
-        return done(null, user);
-      } else {
-        return done(null, false, { message: 'Incorrect username or password.' });
-      }
-    }));
   }
 
   async getUser(userId: string): Promise<any> {
