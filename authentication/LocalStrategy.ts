@@ -1,9 +1,9 @@
 import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
-import serverState from '../ServerState';
+import { UserStorage } from '../ServerState';
 
 passport.use(new LocalStrategy(async (username, password, done) => {
-  const user = await serverState.userStorage.getUser(username);
+  const user = await UserStorage.getUser(username);
   if (user && user.password === password) {
     return done(null, user);
   } else {

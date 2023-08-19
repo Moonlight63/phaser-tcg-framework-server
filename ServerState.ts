@@ -6,49 +6,57 @@ import { InMemorySessionStorage } from './connectors/session/InMemorySessionStor
 import { LobbyStorageConnector } from './connectors/lobby/LobbyStorageConnector';
 import { InMemoryLobbyStorage } from './connectors/lobby/InMemoryLobbyStorage';
 
-let _userStorage: UserStorageConnector;
-let _sessionStorage: SessionStorageConnector;
-let _lobbyStorage: LobbyStorageConnector;
 
-Object.defineProperty(exports, 'userStorage', {
-  get: function() { return _userStorage; },
-  configurable: false
-});
+class StateFactory {
+  private static _userStorage: UserStorageConnector;
+  private static _sessionStorage: SessionStorageConnector;
+  private static _lobbyStorage: LobbyStorageConnector;
 
-Object.defineProperty(exports, 'sessionStorage', {
-  get: function() { return _sessionStorage; },
-  configurable: false
-});
-
-Object.defineProperty(exports, 'lobbyStorage', {
-  get: function() { return _lobbyStorage; },
-  configurable: false
-});
-
-export function create(config: Parsed) {
-  // Initialize the connectors based on the config
-  switch (config.userStorage.type) {
-    case 'LocalConnector':
-      _userStorage = new LocalUserStorage(config.userStorage.filePath);
-      break;
-    // Here, you can expand to other types like PostgreSQL, etc.
-    default:
-      throw new Error('User storage type not yet implemented');
+  static get UserStorage() {
+    return this._userStorage;
   }
 
-  switch (config.sessionStorage.type) {
-    case 'InMemory':
-      _sessionStorage = new InMemorySessionStorage();
-      break;
-    default:
-      throw new Error('Session storage type not yet implemented');
+  static get SessionStorage() {
+    return this._sessionStorage;
   }
 
-  switch (config.lobbyStorage.type) {
-    case 'InMemory':
-      _lobbyStorage = new InMemoryLobbyStorage();
-      break;
-    default:
-      throw new Error('Lobby storage type not yet implemented');
+  static get LobbyStorage() {
+    return this._lobbyStorage;
   }
+
+  static create(config: Parsed) {
+    // Initialize the connectors based on the config
+    switch (config.userStorage.type) {
+      case 'LocalConnector':
+        StateFactory._userStorage = new LocalUserStorage(config.userStorage.filePath);
+        break;
+      // Here, you can expand to other types like PostgreSQL, etc.
+      default:
+        throw new Error('User storage type not yet implemented');
+    }
+
+    switch (config.sessionStorage.type) {
+      case 'InMemory':
+        StateFactory._sessionStorage = new InMemorySessionStorage();
+        break;
+      default:
+        throw new Error('Session storage type not yet implemented');
+    }
+
+    switch (config.lobbyStorage.type) {
+      case 'InMemory':
+        StateFactory._lobbyStorage = new InMemoryLobbyStorage();
+        break;
+      default:
+        throw new Error('Lobby storage type not yet implemented');
+    }
+  }
+}
+
+// Named exports for each static getter.
+export const UserStorage = StateFactory.UserStorage;
+export const SessionStorage = StateFactory.SessionStorage;
+export const LobbyStorage = StateFactory.LobbyStorage;
+export function CreateState(config: Parsed) {
+  StateFactory.create(config);
 }

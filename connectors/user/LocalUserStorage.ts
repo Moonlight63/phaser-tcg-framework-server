@@ -30,10 +30,6 @@ export class LocalUserStorage extends UserStorageConnector {
     fs.writeFileSync(this.filePath, JSON.stringify(data));
   }
 
-  authenticate() {
-    return passport.authenticate('local', { failureFlash: true });
-  }
-
   async register(userData: any): Promise<User> {
     const user = await this.getUser(userData.username);
     if (user) {
@@ -41,10 +37,5 @@ export class LocalUserStorage extends UserStorageConnector {
     }
     await this.setUser(userData);
     return userData;
-  }
-
-  initialize(app: Express.Application): void {
-    app.use(passport.initialize());
-    app.use(passport.session());
   }
 }
