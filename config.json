@@ -1,0 +1,21 @@
+{
+  "environmental": {
+    "secret": "your_secret_key_here",
+    "listenOn": "3000",
+    "basePath": "/api",
+    "version": "1.0"
+  },
+  "userStorage": {
+    "type": "LocalConnector",
+    "filePath": "./users.json",
+    "timeout": "1h"
+  },
+  "sessionStorage": {
+    "type": "InMemory",
+    "timeout": "30m"
+  },
+  "lobbyStorage": {
+    "type": "InMemory",
+    "abandonedTime": "15m"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "username": "player1",
+      "password": "hashed_password_1",
+      "decks": ["deck_1", "deck_2"]
+    },
+    {
+      "id": "2",
+      "username": "player2",
+      "password": "hashed_password_2",
+      "decks": ["deck_3"]
+    }
+  ]
+}
