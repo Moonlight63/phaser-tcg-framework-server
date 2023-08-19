@@ -1,7 +1,8 @@
 import express from 'express';
 import { parseConfig } from './configParser';
 import * as ServerState from './ServerState';
-import localStrategyRouter from './authentication/LocalStrategy';
+import AuthRouter from './authentication/AuthRouter';
+import passport from 'passport';
 
 function getConfigFilePath(): string {
     const configPath = process.env["CQ_CONFIG_PATH"];
@@ -21,8 +22,8 @@ const main = async () => {
     // Middleware: for example, to parse JSON requests
     app.use(express.json());
 
-    // Use the local strategy router as a subrouter under the '/login/local' path
-    app.use('/login/local', localStrategyRouter);
+
+    app.use('/', AuthRouter);
 
     // Start listening
     const port = typeof config.environmental.listenOn === 'number'
