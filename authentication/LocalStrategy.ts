@@ -5,7 +5,7 @@ import { UserStorage } from '../ServerState';
 
 const router = express.Router();
 
-passport.use(new LocalStrategy(async (username, password, done) => {
+passport.use('local', new LocalStrategy(async (username, password, done) => {
   const user = await UserStorage.getUser(username);
   if (user && user.password === password) {
     return done(null, user);
