@@ -6,15 +6,30 @@ import { InMemorySessionStorage } from './connectors/session/InMemorySessionStor
 import { LobbyStorageConnector } from './connectors/lobby/LobbyStorageConnector';
 import { InMemoryLobbyStorage } from './connectors/lobby/InMemoryLobbyStorage';
 
-export let userStorage: UserStorageConnector;
-export let sessionStorage: SessionStorageConnector;
-export let lobbyStorage: LobbyStorageConnector;
+let _userStorage: UserStorageConnector;
+let _sessionStorage: SessionStorageConnector;
+let _lobbyStorage: LobbyStorageConnector;
+
+Object.defineProperty(exports, 'userStorage', {
+  get: function() { return _userStorage; },
+  configurable: false
+});
+
+Object.defineProperty(exports, 'sessionStorage', {
+  get: function() { return _sessionStorage; },
+  configurable: false
+});
+
+Object.defineProperty(exports, 'lobbyStorage', {
+  get: function() { return _lobbyStorage; },
+  configurable: false
+});
 
 export function create(config: Parsed) {
   // Initialize the connectors based on the config
   switch (config.userStorage.type) {
     case 'LocalConnector':
-      userStorage = new LocalUserStorage(config.userStorage.filePath);
+      _userStorage = new LocalUserStorage(config.userStorage.filePath);
       break;
     // Here, you can expand to other types like PostgreSQL, etc.
     default:
@@ -23,7 +38,7 @@ export function create(config: Parsed) {
 
   switch (config.sessionStorage.type) {
     case 'InMemory':
-      sessionStorage = new InMemorySessionStorage();
+      _sessionStorage = new InMemorySessionStorage();
       break;
     default:
       throw new Error('Session storage type not yet implemented');
@@ -31,7 +46,7 @@ export function create(config: Parsed) {
 
   switch (config.lobbyStorage.type) {
     case 'InMemory':
-      lobbyStorage = new InMemoryLobbyStorage();
+      _lobbyStorage = new InMemoryLobbyStorage();
       break;
     default:
       throw new Error('Lobby storage type not yet implemented');
