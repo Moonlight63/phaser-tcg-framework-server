@@ -2,7 +2,7 @@ import { Parsed } from './configParser';
 import { UserStorageConnector } from './connectors/user/UserStorageConnector';
 import { LocalUserStorage } from './connectors/user/LocalUserStorage';
 import { SessionStorageConnector } from './connectors/session/SessionStorageConnector';
-import { InMemorySessionStorage } from './connectors/session/InMemorySessionStorage';
+import { FileSessionStorage } from './connectors/session/FileSessionStore';
 import { LobbyStorageConnector } from './connectors/lobby/LobbyStorageConnector';
 import { InMemoryLobbyStorage } from './connectors/lobby/InMemoryLobbyStorage';
 
@@ -36,8 +36,8 @@ class StateFactory {
     }
 
     switch (config.sessionStorage.type) {
-      case 'InMemory':
-        StateFactory._sessionStorage = new InMemorySessionStorage();
+      case 'FileStore':
+        StateFactory._sessionStorage = new FileSessionStorage();
         break;
       default:
         throw new Error('Session storage type not yet implemented');

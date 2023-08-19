@@ -39,6 +39,11 @@ interface LocalConnector extends StorageBase {
   filePath: string;
 }
 
+interface FileStore extends StorageBase {
+  type: "FileStore";
+  filePath: string;
+}
+
 interface PostgreSQL extends StorageBase {
   type: "PostgreSQL";
   connection: PostgresConnection;
