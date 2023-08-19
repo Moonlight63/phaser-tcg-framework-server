@@ -29,14 +29,42 @@ export class LocalUserStorage extends UserStorageConnector {
   }
 
   async authenticate(username: string, password: string): Promise<User | null> {
-    // Implement Passport's authenticate method here
+    const user = await this.getUser(username);
+    if (user && user.password === password) {
+      return user;
+    }
+    return null;
   }
 
   async register(userData: any): Promise<User> {
-    // Implement Passport's register method here
+    const user = await this.getUser(userData.username);
+    if (user) {
+      throw new Error('User already exists');
+    }
+    await this.setUser(userData);
+    return userData;
   }
 
   initialize(app: Express.Application): void {
-    // Initialize Passport and add its middleware here
+    passport.serializeUser((user: any, done) => {
+      done(null, user.id);
+    });
+
+    passport.deserializeUser(async (id: string, done) => {
+      const user = await this.getUser(id);
+      done(null, user);
+    });
+
+    passport.use(new LocalStrategy(async (username, password, done) => {
+      const user = await this.authenticate(username, password);
+      if (user) {
+        return done(null, user);
+      } else {
+        return done(null, false, { message: 'Incorrect username or password.' });
+      }
+    }));
+
+    app.use(passport.initialize());
+    app.use(passport.session());
   }
 }
