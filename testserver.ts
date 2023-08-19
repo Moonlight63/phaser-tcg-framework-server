@@ -1,6 +1,7 @@
 import express from 'express';
 import { parseConfig } from './configParser';
 import * as ServerState from './ServerState';
+import localStrategyRouter from './authentication/LocalStrategy';
 
 function getConfigFilePath(): string {
     const configPath = process.env["CQ_CONFIG_PATH"];
@@ -20,21 +21,8 @@ const main = async () => {
     // Middleware: for example, to parse JSON requests
     app.use(express.json());
 
-    // Create a router and define routes on it
-    const router = express.Router();
-
-    // Set up endpoints, using the server state where needed
-    router.post('/login', (req, res) => {
-        // Implement login functionality using serverState.userStorage
-        // For example:
-        // const user = serverState.userStorage.getUser(req.body.username);
-        res.status(200).send('Login endpoint');
-    });
-
-    // Continue setting up other endpoints as needed...
-
-    // Attach the router with the base path
-    app.use(config.environmental.basePath, router);
+    // Use the local strategy router as a subrouter under the '/login/local' path
+    app.use('/login/local', localStrategyRouter);
 
     // Start listening
     const port = typeof config.environmental.listenOn === 'number'

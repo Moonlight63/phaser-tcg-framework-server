@@ -1,6 +1,9 @@
+import express from 'express';
 import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
 import { UserStorage } from '../ServerState';
+
+const router = express.Router();
 
 passport.use(new LocalStrategy(async (username, password, done) => {
   const user = await UserStorage.getUser(username);
@@ -10,3 +13,9 @@ passport.use(new LocalStrategy(async (username, password, done) => {
     return done(null, false, { message: 'Incorrect username or password.' });
   }
 }));
+
+router.post('/', passport.authenticate('local', { failureRedirect: '/login' }), (req, res) => {
+  res.redirect('/');
+});
+
+export default router;
