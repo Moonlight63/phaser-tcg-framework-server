@@ -1,4 +1,4 @@
-abstract class UserStorageConnector {
+export abstract class UserStorageConnector {
   abstract getUser(userId: string): Promise<any>;
   abstract setUser(user: any): Promise<void>;
   abstract deleteUser(userId: string): Promise<void>;
