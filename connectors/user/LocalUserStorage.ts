@@ -10,6 +10,24 @@ export class LocalUserStorage extends UserStorageConnector {
   constructor(config: any) {
     super();
     this.filePath = config.filePath;
+
+    passport.serializeUser((user: any, done) => {
+      done(null, user.id);
+    });
+
+    passport.deserializeUser(async (id: string, done) => {
+      const user = await this.getUser(id);
+      done(null, user);
+    });
+
+    passport.use(new LocalStrategy(async (username, password, done) => {
+      const user = await this.authenticate(username, password);
+      if (user) {
+        return done(null, user);
+      } else {
+        return done(null, false, { message: 'Incorrect username or password.' });
+      }
+    }));
   }
 
   async getUser(userId: string): Promise<any> {
@@ -29,12 +47,8 @@ export class LocalUserStorage extends UserStorageConnector {
     fs.writeFileSync(this.filePath, JSON.stringify(data));
   }
 
-  async authenticate(username: string, password: string): Promise<User | null> {
-    const user = await this.getUser(username);
-    if (user && user.password === password) {
-      return user;
-    }
-    return null;
+  authenticate() {
+    return passport.authenticate('local', { failureFlash: true });
   }
 
   async register(userData: any): Promise<User> {
@@ -47,24 +61,6 @@ export class LocalUserStorage extends UserStorageConnector {
   }
 
   initialize(app: Express.Application): void {
-    passport.serializeUser((user: any, done) => {
-      done(null, user.id);
-    });
-
-    passport.deserializeUser(async (id: string, done) => {
-      const user = await this.getUser(id);
-      done(null, user);
-    });
-
-    passport.use(new LocalStrategy(async (username, password, done) => {
-      const user = await this.authenticate(username, password);
-      if (user) {
-        return done(null, user);
-      } else {
-        return done(null, false, { message: 'Incorrect username or password.' });
-      }
-    }));
-
     app.use(passport.initialize());
     app.use(passport.session());
   }
