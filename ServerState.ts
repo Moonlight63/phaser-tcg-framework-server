@@ -24,7 +24,7 @@ class StateFactory {
     return this._lobbyStorage;
   }
 
-  static create(config: Parsed) {
+  static async create(config: Parsed) {
     console.log("Creating state factory...");
     // Initialize the connectors based on the config
     switch (config.userStorage.type) {

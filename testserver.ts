@@ -16,7 +16,7 @@ const main = async () => {
 
     // Initialize the server state
     console.log("Initializing server state...");
-    ServerState.CreateState(config);
+    await ServerState.CreateState(config);
     console.log("Server state initialized.");
 
     // Create an Express application
