@@ -16,8 +16,8 @@ interface EnvironmentalConfig {
 
 interface BaseConfig<D extends Duration> {
   environmental: EnvironmentalConfig;
-  userStorage: UserStorageBase<D> & UserStorageMethods[keyof UserStorageMethods];
-  sessionStorage: SessionStorageRaw[keyof SessionStorageRaw];
+  userStorage: UserStorage<D>;
+  sessionStorage: SessionStorage<D>;
   lobbyStorage: LobbyStorage<D>;
   // lobbyDefaults?: LobbyConfig.Defaults; // Assuming you'll have a LobbyConfig file with Defaults type
 }
@@ -28,7 +28,8 @@ export type Parsed = {
   environmental: EnvironmentalConfig;
   userStorage: UserStorageOptions[Unparsed['userStorage']['type']];
   sessionStorage: SessionStorageOptions[Unparsed['sessionStorage']['type']];
-  lobbyStorage: LobbyStorage<ParsedDuration, Unparsed['lobbyStorage']['type']>;
+  lobbyStorage: LobbyStorageOptions[Unparsed['lobbyStorage']['type']];
+
   // lobbyDefaults?: LobbyConfig.Defaults;
 };
 
@@ -38,26 +39,25 @@ interface StorageBase {
 }
 
 // Session Storage
-interface SessionStorageMethods<D extends Duration> {
-  InMemory: SessionStorageBase<D> & {
+interface SessionStorageMethods {
+  InMemory: StorageBase & {
     type: "InMemory"
   };
 
-  FileStore: SessionStorageBase<D> & {
+  FileStore: StorageBase & {
     type: "FileStore";
     path: string;
   };
 
-  PostgreSQL: SessionStorageBase<D> & {
+  PostgreSQL: StorageBase & {
     type: "PostgreSQL";
     connection: PostgresConnection;
   };
 }
-// type SessionStorageType = SessionStorageMethods[keyof SessionStorageMethods];
-interface SessionStorageBase<D extends Duration> extends StorageBase {
+interface SessionStorageBase<D extends Duration> {
   /**
-         * Session time to live in seconds. Defaults to `3600`
-         */
+   * Session time to live in seconds. Defaults to `3600`
+  */
   ttl?: number | undefined;
 
   /**
@@ -80,13 +80,9 @@ interface SessionStorageBase<D extends Duration> extends StorageBase {
    */
   maxTimeout?: number | undefined;
 }
-// type SessionStorage<D extends Duration> = SessionStorageBase<D> & SessionStorageType;
-// export type SessionStorage<D extends Duration, T extends keyof SessionStorageMethods<D> = keyof SessionStorageMethods<D>> = SessionStorageBase<D> & SessionStorageMethods<D>[T];
-export type SessionStorageRaw = {
-  [K in keyof SessionStorageMethods<Duration>]: SessionStorageMethods<Duration>[K];
-}
+type SessionStorage<D extends Duration, T extends keyof SessionStorageMethods = keyof SessionStorageMethods> = SessionStorageBase<D> & SessionStorageMethods[T];
 export type SessionStorageOptions = {
-  [K in keyof SessionStorageMethods<ParsedDuration>]: SessionStorageMethods<ParsedDuration>[K];
+  [K in keyof SessionStorageMethods]: SessionStorage<ParsedDuration, K>;
 }
 // User Storage
 interface UserStorageMethods {
@@ -104,13 +100,11 @@ interface UserStorageMethods {
     connection: PostgresConnection;
   };
 }
-type UserStorageType = UserStorageMethods[keyof UserStorageMethods];
 interface UserStorageBase<D extends Duration> {
 }
-// type UserStorage<D extends Duration> = UserStorageBase<D> & UserStorageType;
 type UserStorage<D extends Duration, T extends keyof UserStorageMethods = keyof UserStorageMethods> = UserStorageBase<D> & UserStorageMethods[T];
-type UserStorageOptions = {
-  [K in keyof UserStorageMethods]: UserStorageBase<ParsedDuration> & UserStorageMethods[K];
+export type UserStorageOptions = {
+  [K in keyof UserStorageMethods]: UserStorage<ParsedDuration, K>;
 }
 
 // Lobby Storage
@@ -129,13 +123,13 @@ interface LobbyStorageMethods {
     connection: PostgresConnection;
   };
 }
-type LobbyStorageType = LobbyStorageMethods[keyof LobbyStorageMethods];
 interface LobbyStorageBase<D extends Duration> {
   abandonedTime?: D;
 }
-// type LobbyStorage<D extends Duration> = LobbyStorageBase<D> & LobbyStorageType;
 type LobbyStorage<D extends Duration, T extends keyof LobbyStorageMethods = keyof LobbyStorageMethods> = LobbyStorageBase<D> & LobbyStorageMethods[T];
-
+export type LobbyStorageOptions = {
+  [K in keyof LobbyStorageMethods]: LobbyStorage<ParsedDuration, K>;
+}
 
 interface PostgresConnection {
   host: string;
@@ -195,7 +189,7 @@ function parseUserStorage(unparsed: UserStorage<UnparsedDuration>): UserStorage<
   };
 }
 
-function parseSessionStorage(unparsed: SessionStorageRaw): SessionStorageOptions {
+function parseSessionStorage(unparsed: SessionStorage<UnparsedDuration>): SessionStorage<ParsedDuration> {
   return {
     ...unparsed,
     // timeout: unparsed.timeout ? parseDuration(unparsed.timeout) : undefined,

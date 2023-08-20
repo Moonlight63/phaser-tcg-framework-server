@@ -45,7 +45,7 @@ class StateFactory {
 
     switch (config.lobbyStorage.type) {
       case 'InMemory':
-        StateFactory._lobbyStorage = new InMemoryLobbyStorage(config.lobbyStorage);
+        StateFactory._lobbyStorage = new InMemoryLobbyStorage();
         break;
       default:
         throw new Error('Lobby storage type not yet implemented');
