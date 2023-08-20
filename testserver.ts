@@ -1,4 +1,5 @@
 import express from 'express';
+import session from 'express-session';
 import { parseConfig } from './configParser';
 import * as ServerState from './ServerState';
 import AuthRouter from './authentication/AuthRouter';
@@ -22,6 +23,13 @@ const main = async () => {
     // Middleware: for example, to parse JSON requests
     app.use(express.json());
 
+    // Middleware: session
+    app.use(session({
+        secret: config.environmental.secret,
+        store: ServerState.SessionStorage.getStore(),
+        resave: false,
+        saveUninitialized: false
+    }));
 
     app.use('/', AuthRouter);
 
