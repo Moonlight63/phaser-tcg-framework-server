@@ -25,10 +25,13 @@ class StateFactory {
   }
 
   static create(config: Parsed) {
+    console.log("Creating state factory...");
     // Initialize the connectors based on the config
     switch (config.userStorage.type) {
       case 'FileStore':
+        console.log("Creating user storage...");
         StateFactory._userStorage = new LocalUserStorage(config.userStorage);
+        console.log("User storage created.");
         break;
       // Here, you can expand to other types like PostgreSQL, etc.
       default:
@@ -37,7 +40,9 @@ class StateFactory {
 
     switch (config.sessionStorage.type) {
       case 'FileStore':
+        console.log("Creating session storage...");
         StateFactory._sessionStorage = new FileSessionStorage(config.sessionStorage);
+        console.log("Session storage created.");
         break;
       default:
         throw new Error('Session storage type not yet implemented');
@@ -45,11 +50,14 @@ class StateFactory {
 
     switch (config.lobbyStorage.type) {
       case 'InMemory':
+        console.log("Creating lobby storage...");
         StateFactory._lobbyStorage = new InMemoryLobbyStorage();
+        console.log("Lobby storage created.");
         break;
       default:
         throw new Error('Lobby storage type not yet implemented');
     }
+    console.log("State factory created.");
   }
 }
 

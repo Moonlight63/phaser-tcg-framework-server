@@ -15,7 +15,9 @@ const main = async () => {
     const config = parseConfig(getConfigFilePath()); // Make sure to update the path
 
     // Initialize the server state
+    console.log("Initializing server state...");
     ServerState.CreateState(config);
+    console.log("Server state initialized.");
 
     // Create an Express application
     const app = express();
@@ -24,9 +26,12 @@ const main = async () => {
     app.use(express.json());
 
     // Middleware: session
+    console.log("Getting session store...");
+    const store = ServerState.SessionStorage.getStore();
+    console.log("Session store obtained.");
     app.use(session({
         secret: config.environmental.secret,
-        store: ServerState.SessionStorage.getStore(),
+        store: store,
         resave: false,
         saveUninitialized: false
     }));
