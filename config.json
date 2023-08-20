@@ -6,12 +6,12 @@
     "version": "1.0"
   },
   "userStorage": {
-    "type": "LocalConnector",
+    "type": "FileStore",
     "filePath": "./users.json",
     "timeout": "1h"
   },
   "sessionStorage": {
-    "type": "InMemory",
+    "type": "FileStore",
     "timeout": "30m"
   },
   "lobbyStorage": {
