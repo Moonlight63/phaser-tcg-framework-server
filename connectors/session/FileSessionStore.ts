@@ -2,17 +2,19 @@ import { SessionStorageConnector } from './SessionStorageConnector';
 import session from 'express-session';
 import FileStoreFactory from 'session-file-store';
 import type { SessionStorageOptions } from '../../configParser';
-const FileStore = FileStoreFactory(session);
 
 export class FileSessionStorage extends SessionStorageConnector {
-  private readonly options: any;
+  private readonly store: session.Store;
 
   constructor(config: SessionStorageOptions['FileStore']) {
     super();
-    this.options = config || {}; // Default options can be set here
+    const defaultOptions = {}; // Default options can be set here
+    const options = { ...defaultOptions, ...config };
+    const FileStore = FileStoreFactory(session);
+    this.store = new FileStore(options);
   }
 
   getStore(): session.Store {
-    return new FileStore(this.options);
+    return this.store;
   }
 }
