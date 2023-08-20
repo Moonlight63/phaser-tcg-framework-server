@@ -27,6 +27,8 @@ const main = async () => {
 
     // Middleware: session
     console.log("Getting session store...");
+    console.log("🚀 ~ file: testserver.ts:31 ~ main ~ ServerState:", ServerState)
+    console.log("🚀 ~ file: testserver.ts:31 ~ main ~ SessionStorage:", ServerState.SessionStorage)
     const store = ServerState.SessionStorage.getStore();
     console.log("Session store obtained.");
     app.use(session({

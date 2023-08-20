@@ -26,7 +26,9 @@ export class FileSessionStorage extends SessionStorageConnector {
 
   }
 
-  getStore(): session.Store {
+  getStore() {
+    console.log("Getting Store:");
+
     return this.store;
   }
 }
