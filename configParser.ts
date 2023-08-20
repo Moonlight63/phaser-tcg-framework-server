@@ -16,8 +16,8 @@ interface EnvironmentalConfig {
 
 interface BaseConfig<D extends Duration> {
   environmental: EnvironmentalConfig;
-  userStorage: UserStorage<D>;
-  sessionStorage: SessionStorage<D>;
+  userStorage: UserStorageBase<D> & UserStorageMethods[keyof UserStorageMethods];
+  sessionStorage: SessionStorageRaw[keyof SessionStorageRaw];
   lobbyStorage: LobbyStorage<D>;
   // lobbyDefaults?: LobbyConfig.Defaults; // Assuming you'll have a LobbyConfig file with Defaults type
 }
@@ -26,8 +26,8 @@ export type Unparsed = BaseConfig<UnparsedDuration>;
 // export type Parsed = BaseConfig<ParsedDuration>;
 export type Parsed = {
   environmental: EnvironmentalConfig;
-  userStorage: UserStorage<ParsedDuration, Unparsed['userStorage']['type']>;
-  sessionStorage: SessionStorage<ParsedDuration, Unparsed['sessionStorage']['type']>;
+  userStorage: UserStorageOptions[Unparsed['userStorage']['type']];
+  sessionStorage: SessionStorageOptions[Unparsed['sessionStorage']['type']];
   lobbyStorage: LobbyStorage<ParsedDuration, Unparsed['lobbyStorage']['type']>;
   // lobbyDefaults?: LobbyConfig.Defaults;
 };
@@ -81,8 +81,13 @@ interface SessionStorageBase<D extends Duration> extends StorageBase {
   maxTimeout?: number | undefined;
 }
 // type SessionStorage<D extends Duration> = SessionStorageBase<D> & SessionStorageType;
-export type SessionStorage<D extends Duration, T extends keyof SessionStorageMethods<D> = keyof SessionStorageMethods<D>> = SessionStorageBase<D> & SessionStorageMethods<D>[T];
-
+// export type SessionStorage<D extends Duration, T extends keyof SessionStorageMethods<D> = keyof SessionStorageMethods<D>> = SessionStorageBase<D> & SessionStorageMethods<D>[T];
+export type SessionStorageRaw = {
+  [K in keyof SessionStorageMethods<Duration>]: SessionStorageMethods<Duration>[K];
+}
+export type SessionStorageOptions = {
+  [K in keyof SessionStorageMethods<ParsedDuration>]: SessionStorageMethods<ParsedDuration>[K];
+}
 // User Storage
 interface UserStorageMethods {
   InMemory: StorageBase & {
@@ -104,7 +109,9 @@ interface UserStorageBase<D extends Duration> {
 }
 // type UserStorage<D extends Duration> = UserStorageBase<D> & UserStorageType;
 type UserStorage<D extends Duration, T extends keyof UserStorageMethods = keyof UserStorageMethods> = UserStorageBase<D> & UserStorageMethods[T];
-
+type UserStorageOptions = {
+  [K in keyof UserStorageMethods]: UserStorageBase<ParsedDuration> & UserStorageMethods[K];
+}
 
 // Lobby Storage
 interface LobbyStorageMethods {
@@ -188,7 +195,7 @@ function parseUserStorage(unparsed: UserStorage<UnparsedDuration>): UserStorage<
   };
 }
 
-function parseSessionStorage(unparsed: SessionStorage<UnparsedDuration>): SessionStorage<ParsedDuration> {
+function parseSessionStorage(unparsed: SessionStorageRaw): SessionStorageOptions {
   return {
     ...unparsed,
     // timeout: unparsed.timeout ? parseDuration(unparsed.timeout) : undefined,
