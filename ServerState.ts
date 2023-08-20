@@ -27,8 +27,8 @@ class StateFactory {
   static create(config: Parsed) {
     // Initialize the connectors based on the config
     switch (config.userStorage.type) {
-      case 'LocalConnector':
-        StateFactory._userStorage = new LocalUserStorage(config.userStorage.filePath);
+      case 'FileStore':
+        StateFactory._userStorage = new LocalUserStorage(config.userStorage);
         break;
       // Here, you can expand to other types like PostgreSQL, etc.
       default:
@@ -37,7 +37,7 @@ class StateFactory {
 
     switch (config.sessionStorage.type) {
       case 'FileStore':
-        StateFactory._sessionStorage = new FileSessionStorage();
+        StateFactory._sessionStorage = new FileSessionStorage(config.sessionStorage);
         break;
       default:
         throw new Error('Session storage type not yet implemented');
@@ -45,7 +45,7 @@ class StateFactory {
 
     switch (config.lobbyStorage.type) {
       case 'InMemory':
-        StateFactory._lobbyStorage = new InMemoryLobbyStorage();
+        StateFactory._lobbyStorage = new InMemoryLobbyStorage(config.lobbyStorage);
         break;
       default:
         throw new Error('Lobby storage type not yet implemented');

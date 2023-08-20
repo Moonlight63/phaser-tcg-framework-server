@@ -22,32 +22,113 @@ interface BaseConfig<D extends Duration> {
   // lobbyDefaults?: LobbyConfig.Defaults; // Assuming you'll have a LobbyConfig file with Defaults type
 }
 
-export type Parsed = BaseConfig<ParsedDuration>;
 export type Unparsed = BaseConfig<UnparsedDuration>;
+// export type Parsed = BaseConfig<ParsedDuration>;
+export type Parsed = {
+  environmental: EnvironmentalConfig;
+  userStorage: UserStorage<ParsedDuration, Unparsed['userStorage']['type']>;
+  sessionStorage: SessionStorage<ParsedDuration, Unparsed['sessionStorage']['type']>;
+  lobbyStorage: LobbyStorage<ParsedDuration, Unparsed['lobbyStorage']['type']>;
+  // lobbyDefaults?: LobbyConfig.Defaults;
+};
+
 
 interface StorageBase {
   type: string;
 }
 
-// Base interfaces for storage methods
-interface InMemory extends StorageBase {
-  type: "InMemory";
-}
+// Session Storage
+interface SessionStorageMethods<D extends Duration> {
+  InMemory: SessionStorageBase<D> & {
+    type: "InMemory"
+  };
 
-interface LocalConnector extends StorageBase {
-  type: "LocalConnector";
-  filePath: string;
-}
+  FileStore: SessionStorageBase<D> & {
+    type: "FileStore";
+    path: string;
+  };
 
-interface FileStore extends StorageBase {
-  type: "FileStore";
-  filePath: string;
+  PostgreSQL: SessionStorageBase<D> & {
+    type: "PostgreSQL";
+    connection: PostgresConnection;
+  };
 }
+// type SessionStorageType = SessionStorageMethods[keyof SessionStorageMethods];
+interface SessionStorageBase<D extends Duration> extends StorageBase {
+  /**
+         * Session time to live in seconds. Defaults to `3600`
+         */
+  ttl?: number | undefined;
 
-interface PostgreSQL extends StorageBase {
-  type: "PostgreSQL";
-  connection: PostgresConnection;
+  /**
+   * The number of retries to get session data from a session file. Defaults to `5`
+   */
+  retries?: number | undefined;
+
+  /**
+   * The exponential factor to use for retry. Defaults to `1`
+   */
+  factor?: number | undefined;
+
+  /**
+   * The number of milliseconds before starting the first retry. Defaults to `50`
+   */
+  minTimeout?: number | undefined;
+
+  /**
+   * The maximum number of milliseconds between two retries. Defaults to `100`
+   */
+  maxTimeout?: number | undefined;
 }
+// type SessionStorage<D extends Duration> = SessionStorageBase<D> & SessionStorageType;
+export type SessionStorage<D extends Duration, T extends keyof SessionStorageMethods<D> = keyof SessionStorageMethods<D>> = SessionStorageBase<D> & SessionStorageMethods<D>[T];
+
+// User Storage
+interface UserStorageMethods {
+  InMemory: StorageBase & {
+    type: "InMemory"
+  };
+
+  FileStore: StorageBase & {
+    type: "FileStore";
+    path: string;
+  };
+
+  PostgreSQL: StorageBase & {
+    type: "PostgreSQL";
+    connection: PostgresConnection;
+  };
+}
+type UserStorageType = UserStorageMethods[keyof UserStorageMethods];
+interface UserStorageBase<D extends Duration> {
+}
+// type UserStorage<D extends Duration> = UserStorageBase<D> & UserStorageType;
+type UserStorage<D extends Duration, T extends keyof UserStorageMethods = keyof UserStorageMethods> = UserStorageBase<D> & UserStorageMethods[T];
+
+
+// Lobby Storage
+interface LobbyStorageMethods {
+  InMemory: StorageBase & {
+    type: "InMemory"
+  };
+
+  FileStore: StorageBase & {
+    type: "FileStore";
+    path: string;
+  };
+
+  PostgreSQL: StorageBase & {
+    type: "PostgreSQL";
+    connection: PostgresConnection;
+  };
+}
+type LobbyStorageType = LobbyStorageMethods[keyof LobbyStorageMethods];
+interface LobbyStorageBase<D extends Duration> {
+  abandonedTime?: D;
+}
+// type LobbyStorage<D extends Duration> = LobbyStorageBase<D> & LobbyStorageType;
+type LobbyStorage<D extends Duration, T extends keyof LobbyStorageMethods = keyof LobbyStorageMethods> = LobbyStorageBase<D> & LobbyStorageMethods[T];
+
 
 interface PostgresConnection {
   host: string;
@@ -57,25 +138,6 @@ interface PostgresConnection {
   database: string;
   keepAlive?: boolean;
 }
-
-// User Storage
-interface UserStorageBase<D extends Duration> {
-  timeout?: D;
-}
-type UserStorage<D extends Duration> = UserStorageBase<D> & (InMemory | LocalConnector | PostgreSQL);
-
-// Session Storage
-interface SessionStorageBase<D extends Duration> {
-  timeout?: D;
-}
-type SessionStorage<D extends Duration> = SessionStorageBase<D> & (InMemory | LocalConnector | PostgreSQL);
-
-// Lobby Storage
-interface LobbyStorageBase<D extends Duration> {
-  abandonedTime?: D;
-}
-type LobbyStorage<D extends Duration> = LobbyStorageBase<D> & (InMemory | LocalConnector | PostgreSQL);
-
 
 // Parser Functions:
 
@@ -122,14 +184,14 @@ function parse(config: Unparsed): Parsed {
 function parseUserStorage(unparsed: UserStorage<UnparsedDuration>): UserStorage<ParsedDuration> {
   return {
     ...unparsed,
-    timeout: unparsed.timeout ? parseDuration(unparsed.timeout) : undefined,
+    // timeout: unparsed.timeout ? parseDuration(unparsed.timeout) : undefined,
   };
 }
 
 function parseSessionStorage(unparsed: SessionStorage<UnparsedDuration>): SessionStorage<ParsedDuration> {
   return {
     ...unparsed,
-    timeout: unparsed.timeout ? parseDuration(unparsed.timeout) : undefined,
+    // timeout: unparsed.timeout ? parseDuration(unparsed.timeout) : undefined,
   };
 }
 
