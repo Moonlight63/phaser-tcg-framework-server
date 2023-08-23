@@ -3,7 +3,7 @@
     {
       "id": "1",
       "username": "player1",
-      "password": "hashed_password_1",
+      "password": "password",
       "decks": ["deck_1", "deck_2"]
     },
     {

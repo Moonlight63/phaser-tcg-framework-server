@@ -22,7 +22,7 @@ export class FileSessionStorage extends SessionStorageConnector {
     const options = { ...defaultOptions, ...config };
     const FileStore = FileStoreFactory(session);
     this.store = new FileStore(options);
-    console.log(this.store);
+    // console.log(this.store);
 
   }
 

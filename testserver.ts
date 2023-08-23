@@ -27,21 +27,40 @@ const main = async () => {
 
     // Middleware: session
     console.log("Getting session store...");
-    console.log("🚀 ~ file: testserver.ts:31 ~ main ~ ServerState:", ServerState)
-    console.log("🚀 ~ file: testserver.ts:31 ~ main ~ SessionStorage:", ServerState.SessionStorage)
-    const store = ServerState.SessionStorage.getStore();
+    // console.log("🚀 ~ file: testserver.ts:31 ~ main ~ ServerState:", ServerState)
+    // console.log("🚀 ~ file: testserver.ts:31 ~ main ~ SessionStorage:", ServerState.SessionStorage)
+    const store = ServerState.SessionStorage().getStore();
     console.log("Session store obtained.");
+
     app.use(session({
         secret: config.environmental.secret,
+        cookie: {
+            secure: process.env.NODE_ENV === "production",
+        },
         store: store,
         resave: false,
         saveUninitialized: false
     }));
 
     // Initialize Passport and restore authentication state, if any, from the session.
-    app.use(passport.session());
+    app.use(passport.authenticate('session'));
 
     app.use('/', AuthRouter);
+
+    passport.serializeUser(function (user: any, cb) {
+        console.log(user);
+
+        process.nextTick(function () {
+            cb(null, { id: user.id, username: user.username });
+        });
+    });
+
+    passport.deserializeUser(function (user: any, cb) {
+        console.log("🚀 ~ file: testserver.ts:59 ~ user:", user)
+        process.nextTick(function () {
+            return cb(null, user);
+        });
+    });
 
     // Start listening
     const port = typeof config.environmental.listenOn === 'number'

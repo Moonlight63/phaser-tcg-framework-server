@@ -7,17 +7,22 @@ import { LobbyStorageConnector } from './connectors/lobby/LobbyStorageConnector'
 import { InMemoryLobbyStorage } from './connectors/lobby/InMemoryLobbyStorage';
 
 
-let UserStorage: UserStorageConnector;
-let SessionStorage: SessionStorageConnector;
-let LobbyStorage: LobbyStorageConnector;
+let _userStorage: UserStorageConnector;
+let _sessionStorage: SessionStorageConnector;
+let _lobbyStorage: LobbyStorageConnector;
 
-async function create(config: Parsed) {
+export const UserStorage = () => _userStorage;
+export const SessionStorage = () => _sessionStorage;
+export const LobbyStorage = () => _lobbyStorage;
+
+
+export async function CreateState(config: Parsed) {
   console.log("Creating state...");
   // Initialize the connectors based on the config
   switch (config.userStorage.type) {
     case 'FileStore':
       console.log("Creating user storage...");
-      UserStorage = new LocalUserStorage(config.userStorage);
+      _userStorage = new LocalUserStorage(config.userStorage);
       console.log("User storage created.");
       break;
     // Here, you can expand to other types like PostgreSQL, etc.
@@ -28,7 +33,7 @@ async function create(config: Parsed) {
   switch (config.sessionStorage.type) {
     case 'FileStore':
       console.log("Creating session storage...");
-      SessionStorage = new FileSessionStorage(config.sessionStorage);
+      _sessionStorage = new FileSessionStorage(config.sessionStorage);
       console.log("Session storage created.");
       break;
     default:
@@ -38,7 +43,7 @@ async function create(config: Parsed) {
   switch (config.lobbyStorage.type) {
     case 'InMemory':
       console.log("Creating lobby storage...");
-      LobbyStorage = new InMemoryLobbyStorage();
+      _lobbyStorage = new InMemoryLobbyStorage();
       console.log("Lobby storage created.");
       break;
     default:
@@ -46,5 +51,3 @@ async function create(config: Parsed) {
   }
   console.log("State created.");
 }
-
-export { UserStorage, SessionStorage, LobbyStorage, create as CreateState };

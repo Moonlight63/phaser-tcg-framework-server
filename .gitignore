@@ -128,5 +128,11 @@ dist
 .yarn/unplugged
 .yarn/build-state.yml
 .yarn/install-state.gz
+
+# testing out aider for fun, not super useful as things get more complicated
+# but does generate some good commit messages for me
 .pnp.*
 .aider*
+
+# Don't include sessions
+db/sessions/*

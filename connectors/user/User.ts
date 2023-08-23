@@ -18,3 +18,4 @@ export type Card = {
     pointValue: number;
     imageUrl: string;
 }
+

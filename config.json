@@ -7,7 +7,7 @@
   },
   "userStorage": {
     "type": "FileStore",
-    "filePath": "./users.json",
+    "filePath": "db/localUsers.json",
     "timeout": "1h"
   },
   "sessionStorage": {
