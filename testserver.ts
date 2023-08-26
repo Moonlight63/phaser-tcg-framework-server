@@ -34,12 +34,12 @@ const main = async () => {
 
     app.use(session({
         secret: config.environmental.secret,
+        store: store,
+        resave: false,
+        saveUninitialized: false,
         cookie: {
             secure: process.env.NODE_ENV === "production",
         },
-        store: store,
-        resave: false,
-        saveUninitialized: false
     }));
 
     // Initialize Passport and restore authentication state, if any, from the session.
