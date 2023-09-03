@@ -30,10 +30,11 @@ const mapping = cardFolders.map((folder) => {
 }).join('\n');
 
 // Add imports to the TypeScript file content
-tsFileContent += `${imports}\n\n`;
+tsFileContent += `${imports}\n`;
 
 // Add the static mapping and the factory function
 tsFileContent += `
+import { CardWrapper } from './CardWrapper';
 
 const cardMapping = {
 ${mapping}
@@ -44,7 +45,7 @@ export type CardId = keyof typeof cardMapping;
 export function createCard(cardId: CardId) {
   const CardClass = cardMapping[cardId];
   if (CardClass) {
-    return new CardClass();
+    return new CardWrapper(new CardClass());
   }
   return null;
 }

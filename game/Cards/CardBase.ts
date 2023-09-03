@@ -1,3 +1,5 @@
+import { PlayableZone } from "../CardLocations";
+
 export const enum Faction {
   NOVASEVEN,
   ATAVASPAWN,
@@ -31,6 +33,27 @@ export const enum CardType {
   STAR,
 }
 
+export interface IInfluencer {
+  influencing: PlayableZone
+  influenceEffect(card: CardBase): void
+  influence(zone: PlayableZone): void
+}
+
+
+// export class InfluenceEffect {
+//   influencing: PlayableZone
+//   influenceEffect(card: CardBase): void {
+
+//   }
+//   influence(zone: PlayableZone): void {
+
+//   }
+// }
+// Type guard function
+export function isInfluencer<T extends CardBase>(card: T): card is T & IInfluencer {
+  return 'influencing' in card;
+}
+
 export const CardTypes: { [key in CardType]: { type: string, description: string } } = {
   [CardType.UNIT]: {
     type: 'Unit',
@@ -55,7 +78,7 @@ export abstract class CardBase {
     private description: string,
     private faction: Faction,
     private pointValue: number,
-    private type: CardType,
+    private type: CardType
   ) {
     this.modifiers = new Map()
     this.UUID = this.generateUUID()
@@ -77,5 +100,38 @@ export abstract class CardBase {
     return initPoints
   }
 
+  getUID() {
+    return this.UUID
+  }
+  getName() {
+    return this.name
+  }
+  getDescription() {
+    return this.description
+  }
+  getFaction() {
+    return this.faction
+  }
+  getType() {
+    return this.type
+  }
+
+
   abstract reveal(): void
 }
+
+
+// class TestCard extends CardBase implements InfluenceEffect {
+//   influencing: PlayableZone;
+//   influenceEffect(card: CardBase): void {
+//     throw new Error("Method not implemented.");
+//   }
+//   influence(zone: PlayableZone): void {
+//     throw new Error("Method not implemented.");
+//   }
+//   reveal(): void {
+//     throw new Error("Method not implemented.");
+//   }
+
+// }
+
