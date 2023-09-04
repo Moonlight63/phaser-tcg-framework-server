@@ -228,7 +228,7 @@ export class EvoPile extends BasicContainer {
 
 
 
-abstract class InfluencableZone extends CardLocation {
+export abstract class InfluencableZone extends CardLocation {
   private influencers: CardSlot[] = []
 
   addInfluence(card: CardBase): boolean {

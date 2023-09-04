@@ -1,4 +1,4 @@
-import { PlayableZone } from "../CardLocations";
+import { InfluencableZone } from "../CardLocations";
 
 export const enum Faction {
   NOVASEVEN,
@@ -34,9 +34,9 @@ export const enum CardType {
 }
 
 export interface IInfluencer {
-  influencing: PlayableZone
+  influencing: InfluencableZone
   influenceEffect(card: CardBase): void
-  influence(zone: PlayableZone): void
+  influence(zone: InfluencableZone): void
 }
 
 

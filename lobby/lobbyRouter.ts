@@ -3,13 +3,13 @@ import express from 'express';
 const router = express.Router();
 
 import { Lobby } from './lobby';
-import { InMemoryLobbyStorage } from '../connectors/lobby/InMemoryLobbyStorage';
+import { LobbyStorage } from '../ServerState';
 
-const lobbyStorage = new InMemoryLobbyStorage();
+const lobbyStorage = LobbyStorage();
 
 router.post('/create', async (req, res) => {
   if (req.user) {
-    const lobby = new Lobby(req.user.id);
+    const lobby = await Lobby.createLobby(req.user.id, req.body);
     await lobbyStorage.setLobby(lobby);
     res.json(lobby);
   } else {
