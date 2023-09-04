@@ -5,15 +5,19 @@ import { SessionStorageConnector } from './connectors/session/SessionStorageConn
 import { FileSessionStorage } from './connectors/session/FileSessionStore';
 import { LobbyStorageConnector } from './connectors/lobby/LobbyStorageConnector';
 import { InMemoryLobbyStorage } from './connectors/lobby/InMemoryLobbyStorage';
+import { Server, Socket } from 'socket.io';
+import { ClientToServerEvents, ServerToClientEvents } from './events/Events';
 
 
 let _userStorage: UserStorageConnector;
 let _sessionStorage: SessionStorageConnector;
 let _lobbyStorage: LobbyStorageConnector;
+let _socket: Server<ClientToServerEvents, ServerToClientEvents>;
 
 export const UserStorage = () => _userStorage;
 export const SessionStorage = () => _sessionStorage;
 export const LobbyStorage = () => _lobbyStorage;
+export const IO = () => _socket;
 
 
 export async function CreateState(config: Parsed) {
@@ -49,5 +53,8 @@ export async function CreateState(config: Parsed) {
     default:
       throw new Error('Lobby storage type not yet implemented');
   }
+
+  _socket = new Server<ClientToServerEvents, ServerToClientEvents>();
+
   console.log("State created.");
 }

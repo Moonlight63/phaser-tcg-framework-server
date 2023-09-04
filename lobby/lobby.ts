@@ -1,5 +1,6 @@
 import { UserStorage } from "../ServerState";
 import { z } from "zod";
+import { SocketEmitter } from "../events/Events";
 
 const GameRulesSchema = z.object({
   supplyDropCount: z.number().default(7),
@@ -24,6 +25,7 @@ export class Lobby {
   users: string[]; // Array of user IDs
   owner: string;
   lobbyConfig: LobbyConfig;
+  emitter: SocketEmitter;
 
   private constructor(ownerId: string, lobbyConfig: LobbyConfig) {
     const code = Math.random().toString(36).toUpperCase();
@@ -31,6 +33,7 @@ export class Lobby {
     this.owner = ownerId;
     this.users = [ownerId];
     this.lobbyConfig = lobbyConfig;
+    this.emitter = new SocketEmitter(this.id);
   }
 
   static async createLobby(ownerId: string, lobbyConfig?: Partial<LobbyConfig>): Promise<Lobby | null> {
