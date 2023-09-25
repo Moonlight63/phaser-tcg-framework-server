@@ -11,11 +11,13 @@ passport.use('local', new LocalStrategy(async (username, password, done) => {
   console.log("🚀 ~ file: LocalStrategy.ts:9 ~ passport.use ~ password:", password)
   console.log("🚀 ~ file: LocalStrategy.ts:9 ~ passport.use ~ username:", username)
   const user = await UserStorage().getUserByUsername(username);
-  if (user && user.password === password) {
-    console.log("🚀 ~ file: LocalStrategy.ts:13 ~ passport.use ~ user.password === password:", user.password === password)
-    return done(null, user);
-  } else {
-    return done(null, false, { message: 'Incorrect username or password.' });
+  if (user) {
+    const fulluser = await UserStorage().getFullUser(user.id);
+    if (fulluser && fulluser.password === password) {
+      return done(null, user);
+    } else {
+      return done(null, false, { message: 'Incorrect username or password.' });
+    }
   }
 }));
 

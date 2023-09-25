@@ -1,19 +1,21 @@
 import { Server, Socket } from 'socket.io';
 import { LobbyStorage, IO, UserStorage } from '../ServerState';
 import { joined } from '../events/LobbyEvents/Emitters/UserJoin';
+import { left } from '../events/LobbyEvents/Emitters/UserLeft';
 
 const lobbyStorage = LobbyStorage();
 
 export const setupLobbyEvents = () => {
   IO().on('connection', (socket) => {
 
-    socket.on("JoinUser", async ({ userId }) => {
+    socket.on("JoinUser", async ({ userId, lobbyId }) => {
       const user = await UserStorage().getUser(userId);
       if (user) {
-        const lobby = await lobbyStorage.getLobby(userId);
+        const lobby = await lobbyStorage.getLobby(lobbyId);
         if (lobby) {
           if (lobby.users.includes(userId)) {
             socket.join(userId);
+            socket.join(lobbyId);
             lobby.emitter.emit(joined(user));
             return true;
           }
@@ -22,6 +24,22 @@ export const setupLobbyEvents = () => {
       socket.disconnect(true);
       return false;
     });
+
+    socket.on("LeaveUser", async ({ userId, lobbyId }) => {
+      const user = await UserStorage().getUser(userId);
+      if (user) {
+        const lobby = await lobbyStorage.getLobby(lobbyId);
+        if (lobby) {
+          if (lobby.users.includes(userId)) {
+            socket.leave(userId)
+            socket.leave(lobbyId)
+            lobby.emitter.emit(left(user))
+            return true;
+          }
+        }
+      }
+      return false
+    })
 
     // Leave Lobby Event
     // socket.on('leaveLobby', async (data) => {

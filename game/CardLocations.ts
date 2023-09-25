@@ -171,7 +171,7 @@ export class CardSlot {
   }
 }
 
-abstract class CardLocation {
+export abstract class CardLocation {
   id: string;
   slots: CardSlot[] = [];
 
@@ -223,6 +223,10 @@ export class TheVoid extends BasicContainer {
 }
 
 export class EvoPile extends BasicContainer {
+
+}
+
+export class InfluenceCards extends BasicContainer {
 
 }
 

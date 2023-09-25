@@ -1,4 +1,4 @@
-import type { User as AppUser } from '../connectors/user/User';
+import type { UserPublic as AppUser } from '../connectors/user/User';
 
 declare global {
   namespace Express {

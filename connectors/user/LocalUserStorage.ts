@@ -51,6 +51,15 @@ export class LocalUserStorage extends UserStorageConnector {
     return null;
   }
 
+  async getFullUser(userId: string): Promise<User | null> {
+    const data = JSON.parse(fs.readFileSync(this.filePath, 'utf-8'));
+    const user = UserSchema.safeParse(data.users[userId]);
+    if (user.success) {
+      return user.data;
+    }
+    return null;
+  }
+
   async setUser(user: any): Promise<void> {
     const data = JSON.parse(fs.readFileSync(this.filePath, 'utf-8'));
     data.users[user.id] = user;

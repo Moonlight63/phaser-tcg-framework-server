@@ -1,4 +1,4 @@
-import { Deck, Discard, ExtraSlots, Hand, Skirmish, TheVoid } from "./CardLocations";
+import { Deck, Discard, ExtraSlots, Hand, InfluenceCards, Skirmish, TheVoid } from "./CardLocations";
 
 export class Player {
   private points: number = 0;
@@ -9,15 +9,17 @@ export class Player {
   private skirmishTwo: Skirmish;
   private extraSlots: ExtraSlots;
   private cardVoid: TheVoid;
+  private influence: InfluenceCards;
 
   constructor(private id: string) {
-    this.hand = new Hand(id + "_hand");
-    this.deck = new Deck(id + "_deck");
-    this.graveyard = new Discard(id + "_graveyard");
-    this.skirmishOne = new Skirmish(id + "_skirmish1", 4);
-    this.skirmishTwo = new Skirmish(id + "_skirmish2", 3);
-    this.extraSlots = new ExtraSlots(id + "_extraslots");
-    this.cardVoid = new TheVoid(id + "_void");
+    this.hand = new Hand(this.id + "_hand");
+    this.deck = new Deck(this.id + "_deck");
+    this.graveyard = new Discard(this.id + "_graveyard");
+    this.skirmishOne = new Skirmish(this.id + "_skirmish1", 4);
+    this.skirmishTwo = new Skirmish(this.id + "_skirmish2", 3);
+    this.extraSlots = new ExtraSlots(this.id + "_extraslots");
+    this.cardVoid = new TheVoid(this.id + "_void");
+    this.influence = new InfluenceCards(this.id + "_influence");
 
     this.extraSlots.setGetAdjacentSlotsCallback(() => {
       return [this.skirmishOne.slots[0], this.skirmishTwo.slots[0]];
